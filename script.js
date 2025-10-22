@@ -1,4 +1,4 @@
-// script.js
+// script.js - CORRECTED VERSION
 
 function toggleMenu() {
   const menu = document.getElementById('sideMenu');
@@ -11,53 +11,210 @@ function toggleMenu() {
   
   menu.setAttribute('aria-hidden', expanded);
 }
-// Splash Screen Handler
+
+// CORRECTED Splash Screen Handler
 document.addEventListener('DOMContentLoaded', function() {
   const splashScreen = document.getElementById('splashScreen');
   const mainContent = document.getElementById('mainContent');
   
-  // Hide main content initially
+  // Ensure elements exist
+  if (!splashScreen || !mainContent) {
+    console.error('Splash screen elements not found');
+    return;
+  }
+  
+  // Show splash screen initially, hide main content
+  splashScreen.style.display = 'flex';
+  mainContent.style.display = 'block';
   mainContent.style.opacity = '0';
   
-  // After 3 seconds, fade out splash and show main content
+  // After 3 seconds, start transition
   setTimeout(() => {
+    // Fade out splash screen
     splashScreen.classList.add('fade-out');
     
-    // Wait for fade-out transition to complete, then show main content
+    // Wait for splash fade-out, then show main content
     setTimeout(() => {
       splashScreen.style.display = 'none';
-      mainContent.classList.add('show');
       
-      // Initialize your existing functionality
-      updateCartBtns();
-      document.querySelectorAll('.hero, .product-grid').forEach(section => {
-        section.style.opacity = '1';
-        section.style.transform = 'translateY(0)';
-      });
-    }, 800); // Match the CSS transition duration
+      // Show main content with smooth transition
+      mainContent.style.opacity = '1';
+      mainContent.style.transition = 'opacity 0.8s ease-in';
+      
+      // Initialize functionality
+      if (typeof updateCartBtns === 'function') updateCartBtns();
+      if (typeof updateCartCount === 'function') updateCartCount();
+      if (typeof updateScrollButtons === 'function') updateScrollButtons();
+      
+      // Animate sections
+      setTimeout(() => {
+        document.querySelectorAll('.hero, .products-section').forEach(section => {
+          if (section) {
+            section.style.opacity = '1';
+            section.style.transform = 'translateY(0)';
+          }
+        });
+      }, 200);
+      
+    }, 800); // Wait for splash fade-out animation
     
-  }, 3000); // 3 seconds
+  }, 3000); // 3 seconds splash duration
 });
 
-// Rest of your existing JavaScript code...
-
-
+// Global variables
 let isLoggedIn = false;
 let currentUser = null;
 let cart = [];
+let currentScrollPosition = 0;
 
-// Product data for better cart display
+// Enhanced Product data with nutrition information
 const products = {
-  1: { name: "Organic Apples", price: 120, unit: "₹/kg" },
-  2: { name: "Organic Bananas", price: 80, unit: "₹/dozen" },
-  3: { name: "Organic Carrots", price: 60, unit: "₹/kg" },
-  4: { name: "Organic Spinach", price: 50, unit: "₹/bunch" },
+  1: { 
+    name: "Organic Apples", 
+    price: 120, 
+    unit: "₹/kg",
+    nutrition: {
+      calories: 52,
+      protein: "0.3g",
+      carbs: "14g",
+      fiber: "2.4g",
+      vitamin_c: "4.6mg"
+    }
+  },
+  2: { 
+    name: "Organic Bananas", 
+    price: 80, 
+    unit: "₹/dozen",
+    nutrition: {
+      calories: 89,
+      protein: "1.1g",
+      carbs: "23g",
+      fiber: "2.6g",
+      potassium: "358mg"
+    }
+  },
+  3: { 
+    name: "Organic Carrots", 
+    price: 60, 
+    unit: "₹/kg",
+    nutrition: {
+      calories: 41,
+      protein: "0.9g",
+      carbs: "10g",
+      fiber: "2.8g",
+      vitamin_a: "835μg"
+    }
+  },
+  4: { 
+    name: "Organic Spinach", 
+    price: 50, 
+    unit: "₹/bunch",
+    nutrition: {
+      calories: 23,
+      protein: "2.9g",
+      carbs: "3.6g",
+      fiber: "2.2g",
+      iron: "2.7mg"
+    }
+  },
+  5: { 
+    name: "Organic Tomatoes", 
+    price: 90, 
+    unit: "₹/kg",
+    nutrition: {
+      calories: 18,
+      protein: "0.9g",
+      carbs: "3.9g",
+      fiber: "1.2g",
+      lycopene: "2.6mg"
+    }
+  },
+  6: { 
+    name: "Organic Broccoli", 
+    price: 110, 
+    unit: "₹/kg",
+    nutrition: {
+      calories: 34,
+      protein: "2.8g",
+      carbs: "7g",
+      fiber: "2.6g",
+      vitamin_k: "102μg"
+    }
+  },
+  7: { 
+    name: "Organic Potatoes", 
+    price: 40, 
+    unit: "₹/kg",
+    nutrition: {
+      calories: 77,
+      protein: "2g",
+      carbs: "17g",
+      fiber: "2.2g",
+      potassium: "421mg"
+    }
+  }
 };
 
-let trackedItems = [
-  { name: "Organic Apples", expiry: "2025-09-29" },
-  { name: "Organic Bananas", expiry: "2025-09-22" }
+// Sample nutrition data for purchased items
+let nutritionItems = [
+  { 
+    id: 1, 
+    expiry: "2025-10-30", 
+    purchaseDate: "2025-10-18"
+  },
+  { 
+    id: 2, 
+    expiry: "2025-11-22", 
+    purchaseDate: "2025-10-16"
+  },
+  { 
+    id: 3, 
+    expiry: "2025-11-12", 
+    purchaseDate: "2025-10-17"
+  },
+  { 
+    id: 5, 
+    expiry: "2025-10-24", 
+    purchaseDate: "2025-10-19"
+  }
 ];
+
+let trackedItems = [
+  { name: "Organic Apples", expiry: "2025-10-30" },
+  { name: "Organic Bananas", expiry: "2025-11-22" },
+  { name: "Organic Carrots", expiry: "2025-11-12" },
+  { name: "Organic Tomatoes", expiry: "2025-10-24" }
+];
+
+// Product scrolling functionality
+function scrollProducts(direction) {
+  const productGrid = document.getElementById('products');
+  const cardWidth = 240; // 220px width + 20px gap
+  const scrollAmount = cardWidth * 2; // Scroll 2 cards at a time
+  
+  if (direction === 'left') {
+    currentScrollPosition = Math.max(0, currentScrollPosition - scrollAmount);
+  } else {
+    const maxScroll = (productGrid.children.length - 3) * cardWidth;
+    currentScrollPosition = Math.min(maxScroll, currentScrollPosition + scrollAmount);
+  }
+  
+  productGrid.style.transform = `translateX(-${currentScrollPosition}px)`;
+  updateScrollButtons();
+}
+
+function updateScrollButtons() {
+  const leftBtn = document.querySelector('.scroll-left');
+  const rightBtn = document.querySelector('.scroll-right');
+  const productGrid = document.getElementById('products');
+  
+  if (!leftBtn || !rightBtn || !productGrid) return;
+  
+  const maxScroll = (productGrid.children.length - 3) * 240;
+  
+  leftBtn.disabled = currentScrollPosition <= 0;
+  rightBtn.disabled = currentScrollPosition >= maxScroll;
+}
 
 function updateCartBtns() {
   document.querySelectorAll('.add-to-cart-btn').forEach(btn => {
@@ -66,6 +223,13 @@ function updateCartBtns() {
   });
   const logoutBtn = document.getElementById('logoutBtn');
   if(logoutBtn) logoutBtn.style.display = isLoggedIn ? 'block' : 'none';
+}
+
+function updateCartCount() {
+  const cartCount = document.getElementById('cartCount');
+  if (cartCount) {
+    cartCount.textContent = cart.length;
+  }
 }
 
 function sanitize(text) {
@@ -78,7 +242,7 @@ function sanitize(text) {
 function showModal(title, fields, submitCallback) {
   const modalContainer = document.getElementById('modal-container');
 
-  // Build inputs using createElement to avoid XSS - fallback is escaped textContent below
+  // Build inputs using createElement to avoid XSS
   let inputsHTML = '';
   fields.forEach(f => {
     inputsHTML += `<input type="${f.type || 'text'}" placeholder="${sanitize(f.placeholder)}" id="${sanitize(f.id)}" />`;
@@ -86,33 +250,28 @@ function showModal(title, fields, submitCallback) {
 
   modalContainer.innerHTML = `
     <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle" tabindex="-1">
-      <button class="close-btn" onclick="closeModal()" aria-label="Close modal">X</button>
+      <button class="close-btn" onclick="closeModal()" aria-label="Close modal">×</button>
       <h2 id="modalTitle">${sanitize(title)}</h2>
       ${inputsHTML}
-      <button id="modalSubmitBtn">${sanitize('Submit')}</button>
+      <button id="modalSubmitBtn">Submit</button>
     </div>`;
 
   modalContainer.style.display = 'flex';
 
-  // Add event listener safely to avoid injection
+  // Add event listener safely
   document.getElementById('modalSubmitBtn').addEventListener('click', () => {
     if (typeof submitCallback === 'function') submitCallback();
-    else {
-      // fallback: evaluate if string passed
-      try {
-        new Function(submitCallback)();
-      } catch (e) {
-        console.error('Modal submit callback error', e);
-      }
-    }
   });
 
   // Focus on the first input for accessibility
   if (fields.length > 0) {
-    const firstInput = document.getElementById(fields[0].id);
-    if (firstInput) firstInput.focus();
+    setTimeout(() => {
+      const firstInput = document.getElementById(fields[0].id);
+      if (firstInput) firstInput.focus();
+    }, 100);
   }
 }
+
 function closeModal() {
   const modalContainer = document.getElementById('modal-container');
   modalContainer.style.display = 'none';
@@ -125,6 +284,7 @@ function showLogin() {
     {id: 'loginPass', placeholder: 'Password', type:'password'}
   ], handleLogin);
 }
+
 function showRegister() {
   showModal('Register', [
     {id: 'regEmail', placeholder: 'Email address', type:'email'},
@@ -132,6 +292,7 @@ function showRegister() {
     {id: 'regName', placeholder: 'Full Name'}
   ], handleRegister);
 }
+
 function showProfile() {
   if (!isLoggedIn) return showLogin();
   showModal('Edit Profile', [
@@ -141,7 +302,6 @@ function showProfile() {
 }
 
 function validateEmail(email) {
-  // Basic email format validation
   const re = /^\S+@\S+\.\S+$/;
   return re.test(email);
 }
@@ -153,12 +313,13 @@ function handleLogin() {
     alert('Please enter a valid email and password.');
     return;
   }
-  // Replace this with real authentication
   isLoggedIn = true;
   currentUser = email;
   closeModal();
   updateCartBtns();
+  alert('Login successful!');
 }
+
 function handleRegister() {
   const email = document.getElementById('regEmail').value.trim();
   const pass = document.getElementById('regPass').value.trim();
@@ -167,13 +328,20 @@ function handleRegister() {
     alert('Please fill in all fields with valid information.');
     return;
   }
-  // Replace this with real registration logic
   isLoggedIn = true;
   currentUser = email;
   closeModal();
   updateCartBtns();
+  alert('Registration successful!');
 }
+
 function handleProfileUpdate() {
+  const name = document.getElementById('profileName').value.trim();
+  const email = document.getElementById('profileEmail').value.trim();
+  if (name && email && validateEmail(email)) {
+    currentUser = email;
+    alert('Profile updated successfully!');
+  }
   closeModal();
 }
 
@@ -183,6 +351,8 @@ function handleLogout() {
   cart = [];
   closeModal();
   updateCartBtns();
+  updateCartCount();
+  alert('Logged out successfully!');
 }
 
 function addToCart(productId) {
@@ -195,45 +365,239 @@ function addToCart(productId) {
     return;
   }
   cart.push(productId);
-  renderCart();
+  updateCartCount();
+  
+  // Add smooth feedback
+  const button = event.target;
+  const originalText = button.textContent;
+  button.textContent = 'Added!';
+  button.style.background = '#45e134';
+  
+  setTimeout(() => {
+    button.textContent = originalText;
+    button.style.background = '';
+  }, 1000);
 }
 
 function removeFromCart(index) {
   cart.splice(index, 1);
-  renderCart();
+  updateCartCount();
+  showCart(); // Refresh cart display
 }
 
-function renderCart() {
-  const container = document.getElementById('cart-placeholder');
-  if(cart.length === 0) {
-    container.innerHTML = '<p style="padding:20px;">Cart is empty</p>';
+function showCart() {
+  if (!isLoggedIn) {
+    showLogin();
     return;
   }
-  const listItems = cart.map((id, i) => {
-    const productName = products[id] ? products[id].name : "Unknown Product";
-    return `<li>${sanitize(productName)} 
-      <button onclick="removeFromCart(${i})" style="margin-left:10px; cursor:pointer;" aria-label="Remove ${sanitize(productName)} from cart">Remove</button>
-    </li>`;
-  }).join('');
-  container.innerHTML = `<div class="modal" role="dialog" aria-modal="true" aria-labelledby="cartTitle">
-    <h2 id="cartTitle">Cart</h2>
-    <ul>${listItems}</ul>
-    <button onclick="closeModal()">Checkout</button>
-  </div>`;
+  
+  const modalContainer = document.getElementById('modal-container');
+  
+  if(cart.length === 0) {
+    modalContainer.innerHTML = `
+      <div class="modal">
+        <button class="close-btn" onclick="closeModal()">×</button>
+        <h2>Your Cart</h2>
+        <p style="text-align: center; padding: 40px 20px; color: #666;">
+          Your cart is empty<br>
+          <small>Start shopping to add items!</small>
+        </p>
+      </div>`;
+  } else {
+    let total = 0;
+    const cartItems = cart.map((id, i) => {
+      const product = products[id];
+      if (product) {
+        total += product.price;
+        return `
+          <div class="cart-item">
+            <div class="cart-item-details">
+              <div class="cart-item-name">${sanitize(product.name)}</div>
+              <div class="cart-item-price">${product.price} ${product.unit}</div>
+            </div>
+            <button class="remove-btn" onclick="removeFromCart(${i})">Remove</button>
+          </div>`;
+      }
+      return '';
+    }).join('');
+    
+    modalContainer.innerHTML = `
+      <div class="modal">
+        <button class="close-btn" onclick="closeModal()">×</button>
+        <h2>Your Cart (${cart.length} items)</h2>
+        <div style="max-height: 300px; overflow-y: auto;">
+          ${cartItems}
+        </div>
+        <div style="margin-top: 20px; padding-top: 20px; border-top: 2px solid #eee;">
+          <div style="font-size: 1.2rem; font-weight: bold; margin-bottom: 15px;">
+            Total: ₹${total}
+          </div>
+          <button onclick="checkout()" style="width: 100%; padding: 15px; font-size: 1.1rem;">
+            Proceed to Checkout
+          </button>
+        </div>
+      </div>`;
+  }
+  
+  modalContainer.style.display = 'flex';
+}
+
+function checkout() {
+  alert(`Thank you for your order! Total: ₹${cart.reduce((sum, id) => sum + (products[id]?.price || 0), 0)}\n\nYour order will be delivered within 2-3 business days.`);
+  cart = [];
+  updateCartCount();
+  closeModal();
+}
+
+function showNutrition() {
+  if (!isLoggedIn) {
+    showLogin();
+    return;
+  }
+  
+  const modalContainer = document.getElementById('modal-container');
+  const today = new Date();
+  
+  if (nutritionItems.length === 0) {
+    modalContainer.innerHTML = `
+      <div class="modal">
+        <button class="close-btn" onclick="closeModal()">×</button>
+        <h2>Nutrition Guide</h2>
+        <p style="text-align: center; padding: 40px 20px; color: #666;">
+          No purchased items to track.<br>
+          <small>Buy some products to see their nutrition information!</small>
+        </p>
+      </div>`;
+  } else {
+    const nutritionHTML = nutritionItems.map(item => {
+      const product = products[item.id];
+      if (!product) return '';
+      
+      const expiryDate = new Date(item.expiry);
+      const diffDays = Math.ceil((expiryDate - today) / (1000 * 60 * 60 * 24));
+      const isExpiring = diffDays <= 3 && diffDays >= 0;
+      
+      const nutritionValues = Object.entries(product.nutrition).map(([key, value]) => {
+        const label = key.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase());
+        return `
+          <div class="nutrition-value">
+            <span class="nutrition-label">${label}</span>
+            ${value}
+          </div>`;
+      }).join('');
+      
+      return `
+        <div class="nutrition-item">
+          <div class="nutrition-header">
+            <span class="nutrition-name">${sanitize(product.name)}</span>
+            <span class="nutrition-expiry ${isExpiring ? 'expiring-soon' : ''}">
+              Expires: ${item.expiry} ${isExpiring ? '⚠️' : ''}
+            </span>
+          </div>
+          <div class="nutrition-values">
+            ${nutritionValues}
+          </div>
+        </div>`;
+    }).join('');
+    
+    modalContainer.innerHTML = `
+      <div class="modal">
+        <button class="close-btn" onclick="closeModal()">×</button>
+        <h2>Nutrition Guide</h2>
+        <div style="max-height: 400px; overflow-y: auto;">
+          ${nutritionHTML}
+        </div>
+        <div style="margin-top: 15px; font-size: 0.9rem; color: #666; text-align: center;">
+          <small>⚠️ Items expiring within 3 days are highlighted</small>
+        </div>
+      </div>`;
+  }
+  
+  modalContainer.style.display = 'flex';
 }
 
 function showCompany() {
   showModal('About Company', [], () => closeModal());
-  setTimeout(() =>
-    document.querySelector('.modal').innerHTML += `<p>Fresco is committed to organic farming and healthy produce.</p>`, 0);
+  setTimeout(() => {
+    const modal = document.querySelector('.modal');
+    if (modal) {
+      modal.innerHTML += `
+        <div style="line-height: 1.6;">
+          <p><strong>Fresco's</strong> mission is to build a healthier future by delivering organic, farm-fresh produce directly from farmers to homes—while simultaneously reducing food waste and promoting sustainability. To achieve this, we adopt several impactful strategies across our operations. Our mission is to promote healthy living through natural, pesticide-free products that support both your wellbeing and environmental sustainability.</p>
+          <p> CEO  : Mahima<br>
+              COO  : Sanvi<br>
+              CHRO : Sai Kiran<br>
+              CIO  : Aakarsh Prince<br>
+              CTO  : Surya Karthik<br>
+              PDO  : Venkata Karthik  <br>
+              CMO  : Vasanth Reddy  <br>
+              CFO  : Vinay Kumar <br>
+          <p>Our mission is to promote healthy living through natural, pesticide-free products that support both your wellbeing and environmental sustainability.</p>
+          <p><strong>Founded:</strong> 2020<br>
+          <strong>Location:</strong> India<br>
+          <strong>Specialization:</strong> Organic Farm Products</p>
+        </div>`;
+    }
+  }, 100);
 }
 
 function showCustomerCare() {
   showModal('Customer Care', [], () => closeModal());
-  setTimeout(() =>
-    document.querySelector('.modal').innerHTML += `<p>Contact: support@fresco.com</p>`, 0);
+  setTimeout(() => {
+    const modal = document.querySelector('.modal');
+    if (modal) {
+      modal.innerHTML += `
+        <div style="line-height: 1.8;">
+          <p><strong>📞 Phone:</strong> +91-9014918876</p>
+          <p><strong>📧 Email:</strong> support@fresco.com</p>
+          <p><strong>🕒 Hours:</strong> Mon-Sat, 9AM-6PM</p>
+          
+          <p>We're here to help with any questions or concerns you may have about our products or services. Your satisfaction is our priority!</p>
+          
+        </div>`;
+    }
+  }, 100);
 }
 
+function showTracker() {
+  if (!isLoggedIn) {
+    showLogin();
+    return;
+  }
+  const today = new Date();
+  showModal('Item Tracker', [], () => closeModal());
+  
+  setTimeout(() => {
+    const modal = document.querySelector('.modal');
+    if (!modal) return;
+    
+    const trackerHTML = trackedItems.map(item => {
+      const expiryDate = new Date(item.expiry);
+      const diffDays = Math.ceil((expiryDate - today) / (1000 * 60 * 60 * 24));
+      const isExpiring = diffDays <= 3 && diffDays >= 0;
+      
+      return `
+        <div style="padding: 10px; margin: 8px 0; background: ${isExpiring ? '#ffe6e6' : '#f8f9fa'}; border-radius: 8px; border-left: 4px solid ${isExpiring ? '#ff4444' : '#45e134'};">
+          <div style="font-weight: bold;">${sanitize(item.name)}</div>
+          <div style="color: ${isExpiring ? '#ff4444' : '#666'}; font-size: 0.9rem;">
+            Expires: ${item.expiry} 
+            ${diffDays >= 0 ? `(${diffDays} days left)` : '(Expired)'}
+            ${isExpiring ? ' ⚠️' : ''}
+          </div>
+        </div>`;
+    }).join('');
+    
+    modal.innerHTML += `
+      <div style="max-height: 300px; overflow-y: auto;">
+        ${trackerHTML}
+      </div>
+      <div style="margin-top: 15px; font-size: 0.9rem; color: #666; text-align: center;">
+        <small>⚠️ Items expiring within 3 days are highlighted in red</small>
+      </div>`;
+  }, 100);
+}
+
+// Excel functionality (kept for backwards compatibility)
 function showSales() {
   showModal('Previous Year Sales', [
     {id: 'excelFileInput', placeholder: 'Upload sales Excel file', type: 'file'}
@@ -251,44 +615,31 @@ function handleExcelUpload(files) {
   const file = files[0];
   const reader = new FileReader();
   reader.onload = (e) => {
-    const data = new Uint8Array(e.target.result);
-    const workbook = XLSX.read(data, {type: 'array'});
-    const firstSheetName = workbook.SheetNames[0];
-    const worksheet = workbook.Sheets[firstSheetName];
-    const htmlString = XLSX.utils.sheet_to_html(worksheet);
+    try {
+      const data = new Uint8Array(e.target.result);
+      const workbook = XLSX.read(data, {type: 'array'});
+      const firstSheetName = workbook.SheetNames[0];
+      const worksheet = workbook.Sheets[firstSheetName];
+      const htmlString = XLSX.utils.sheet_to_html(worksheet);
 
-    const modal = document.querySelector('.modal');
-    if(modal) {
-      modal.innerHTML = `<button class="close-btn" onclick="closeModal()">X</button>
-                        <h2>Previous Year Sales</h2>${sanitize(htmlString)}`;
+      const modal = document.querySelector('.modal');
+      if(modal) {
+        // Safely display Excel data
+        const tempDiv = document.createElement('div');
+        tempDiv.innerHTML = htmlString;
+        modal.innerHTML = `
+          <button class="close-btn" onclick="closeModal()">×</button>
+          <h2>Previous Year Sales</h2>
+          <div style="max-height: 400px; overflow: auto; border: 1px solid #ddd; border-radius: 8px;">
+            ${tempDiv.innerHTML}
+          </div>`;
+      }
+    } catch (error) {
+      alert('Error reading Excel file. Please try again.');
     }
   };
   reader.readAsArrayBuffer(file);
 }
-
-function showTracker() {
-  if (!isLoggedIn) {
-    showLogin();
-    return;
-  }
-  const today = new Date();
-  showModal('Tracker - Items Bought with Expiry', [], () => closeModal());
-  const modal = document.querySelector('.modal');
-  if (!modal) return;
-  const ul = document.createElement('ul');
-  trackedItems.forEach(item => {
-    const li = document.createElement('li');
-    const expiryDate = new Date(item.expiry);
-    const diffDays = Math.ceil((expiryDate - today) / (1000 * 60 * 60 * 24));
-    li.textContent = `${item.name} - Expiry: ${item.expiry}`;
-    if (diffDays <= 3 && diffDays >= 0) {
-      li.classList.add('tracker-expiring');
-    }
-    ul.appendChild(li);
-  });
-  modal.appendChild(ul);
-}
-
 
 // SCANNER FEATURE
 const scannerContainer = document.getElementById('scannerContainer');
@@ -351,10 +702,9 @@ function tick() {
   requestAnimationFrame(tick);
 }
 
+// Initialize everything when page loads
 window.onload = function() {
   updateCartBtns();
-  document.querySelectorAll('.hero, .product-grid').forEach(section => {
-    section.style.opacity = '1';
-    section.style.transform = 'translateY(0)';
-  });
+  updateCartCount();
+  updateScrollButtons();
 };

@@ -4,12 +4,11 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <title>Fresco E-Commerce</title>
-  <link rel="stylesheet" href="style.css"/>
+  <link rel="stylesheet" href="enhanced-style.css"/>
   <script src="https://cdn.sheetjs.com/xlsx-latest/package/dist/xlsx.full.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jsqr/dist/jsQR.js"></script>
 </head>
 <body>
-  <body>
   <!-- Splash Screen -->
   <div id="splashScreen" class="splash-screen">
     <div class="splash-content">
@@ -22,85 +21,124 @@
     </div>
   </div>
 
-  <!-- Main Content (add this wrapper around existing content) -->
+  <!-- Main Content -->
   <div id="mainContent" class="main-content">
     <header>
-      <!-- Your existing header content -->
+      <nav aria-label="Primary navigation">
+        <div class="hamburger" id="hamburger" onclick="toggleMenu()" aria-controls="sideMenu" aria-expanded="false" role="button" tabindex="0" onkeypress="if(event.key==='Enter'){toggleMenu()}">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+        <div class="side-menu" id="sideMenu" role="menu" aria-hidden="true">
+          <button class="close-menu" onclick="toggleMenu()" aria-label="Close menu">&times;</button>
+          <ul>
+            <li><a href="#" onclick="showProfile();toggleMenu();" role="menuitem">Profile</a></li>
+            <li><a href="#" onclick="showLogin();toggleMenu();" role="menuitem">Login</a></li>
+            <li><a href="#" onclick="showRegister();toggleMenu();" role="menuitem">Register</a></li>
+            <li><a href="#" onclick="showCart();toggleMenu();" role="menuitem">Cart (<span id="cartCount">0</span>)</a></li>
+            <li><a href="#" onclick="showNutrition();toggleMenu();" role="menuitem">Nutrition Guide</a></li>
+            <li><a href="#" onclick="openScanner();toggleMenu();" role="menuitem">Scanner</a></li>
+            <li><a href="#" onclick="showTracker();toggleMenu();" role="menuitem">Tracker</a></li>
+            <li><a href="#" onclick="showCustomerCare();toggleMenu();" role="menuitem">Customer Care</a></li>
+            <li><a href="#" onclick="showCompany();toggleMenu();" role="menuitem">About Company</a></li>
+            <li><a href="#" id="logoutBtn" onclick="handleLogout()" style="display:none;" role="menuitem">Logout</a></li>
+          </ul>
+        </div>
+      </nav>
     </header>
-    <!-- Rest of your existing content -->
+
+    <main>
+      <section class="hero" aria-label="Site promotion and branding">
+        <div class="logo-placeholder">
+          <img src="FRESCO.jpg" alt="Fresco logo with green leaf icon" class="logo"/>
+        </div>
+        <h1>Shop Fresco Organics</h1>
+        <p>Natural farm products for a healthier life.</p>
+      </section>
+
+      <!-- Enhanced Product Section with Side Scrolling -->
+      <section class="products-section" aria-label="Available organic products">
+        <div class="section-header">
+          <h2>Our Fresh Products</h2>
+          <div class="scroll-controls">
+            <button class="scroll-btn scroll-left" onclick="scrollProducts('left')" aria-label="Scroll products left">‹</button>
+            <button class="scroll-btn scroll-right" onclick="scrollProducts('right')" aria-label="Scroll products right">›</button>
+          </div>
+        </div>
+        <div class="product-container">
+          <div id="products" class="product-grid" aria-label="Product carousel">
+            <div class="product-card" role="region" aria-labelledby="product-apple">
+              <div class="product-image">🍎</div>
+              <h3 id="product-apple">Organic Apples</h3>
+              <p class="price">₹120/kg</p>
+              <p class="description">Fresh, crisp organic apples</p>
+              <button class="add-to-cart-btn" onclick="addToCart(1)" aria-label="Add Organic Apples to cart">Add to Cart</button>
+            </div>
+            <div class="product-card" role="region" aria-labelledby="product-banana">
+              <div class="product-image">🍌</div>
+              <h3 id="product-banana">Organic Bananas</h3>
+              <p class="price">₹80/dozen</p>
+              <p class="description">Sweet, ripe organic bananas</p>
+              <button class="add-to-cart-btn" onclick="addToCart(2)" aria-label="Add Organic Bananas to cart">Add to Cart</button>
+            </div>
+            <div class="product-card" role="region" aria-labelledby="product-carrot">
+              <div class="product-image">🥕</div>
+              <h3 id="product-carrot">Organic Carrots</h3>
+              <p class="price">₹60/kg</p>
+              <p class="description">Crunchy, vitamin-rich carrots</p>
+              <button class="add-to-cart-btn" onclick="addToCart(3)" aria-label="Add Organic Carrots to cart">Add to Cart</button>
+            </div>
+            <div class="product-card" role="region" aria-labelledby="product-spinach">
+              <div class="product-image">🥬</div>
+              <h3 id="product-spinach">Organic Spinach</h3>
+              <p class="price">₹50/bunch</p>
+              <p class="description">Fresh, iron-rich spinach leaves</p>
+              <button class="add-to-cart-btn" onclick="addToCart(4)" aria-label="Add Organic Spinach to cart">Add to Cart</button>
+            </div>
+            <div class="product-card" role="region" aria-labelledby="product-tomato">
+              <div class="product-image">🍅</div>
+              <h3 id="product-tomato">Organic Tomatoes</h3>
+              <p class="price">₹90/kg</p>
+              <p class="description">Juicy, vine-ripened tomatoes</p>
+              <button class="add-to-cart-btn" onclick="addToCart(5)" aria-label="Add Organic Tomatoes to cart">Add to Cart</button>
+            </div>
+            <div class="product-card" role="region" aria-labelledby="product-broccoli">
+              <div class="product-image">🥦</div>
+              <h3 id="product-broccoli">Organic Broccoli</h3>
+              <p class="price">₹110/kg</p>
+              <p class="description">Fresh, nutrient-dense broccoli</p>
+              <button class="add-to-cart-btn" onclick="addToCart(6)" aria-label="Add Organic Broccoli to cart">Add to Cart</button>
+            </div>
+            <div class="product-card" role="region" aria-labelledby="product-potato">
+              <div class="product-image">🥔</div>
+              <h3 id="product-potato">Organic Potatoes</h3>
+              <p class="price">₹40/kg</p>
+              <p class="description">Fresh, farm-grown potatoes</p>
+              <button class="add-to-cart-btn" onclick="addToCart(7)" aria-label="Add Organic Potatoes to cart">Add to Cart</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Cart Placeholder -->
+      <div id="cart-placeholder" style="display:none;"></div>
+
+      <!-- Unified modal container for all modals -->
+      <div id="modal-container" role="dialog" aria-modal="true" aria-labelledby="modalTitle" tabindex="-1"></div>
+
+      <div id="scannerContainer" style="display:none; flex-direction:column; align-items:center; z-index:1020;">
+        <video id="video" autoplay muted playsinline aria-label="QR code scanner video feed"></video>
+        <button onclick="closeScanner()">Close Scanner</button>
+        <p id="scanResult" aria-live="polite"></p>
+      </div>
+    </main>
+
+    <footer>
+      <p>© 2025 Fresco. All rights reserved.</p>
+    </footer>
   </div>
-</body>
-
-  <header>
   
-    <nav aria-label="Primary navigation">
-      <div class="hamburger" id="hamburger" onclick="toggleMenu()" aria-controls="sideMenu" aria-expanded="false" role="button" tabindex="0" onkeypress="if(event.key==='Enter'){toggleMenu()}">
-        <span></span>
-        <span></span>
-        <span></span>
-      </div>
-      <div class="side-menu" id="sideMenu" role="menu" aria-hidden="true">
-        <button class="close-menu" onclick="toggleMenu()" aria-label="Close menu">&times;</button>
-        <ul>
-          <li><a href="#" onclick="showProfile();toggleMenu();" role="menuitem">Profile</a></li>
-          <li><a href="#" onclick="showLogin();toggleMenu();" role="menuitem">Login</a></li>
-          <li><a href="#" onclick="showRegister();toggleMenu();" role="menuitem">Register</a></li>
-          <li><a href="#" onclick="showCart();toggleMenu();" role="menuitem">Cart (<span id="cartCount">0</span>)</a></li>
-          
-          
-          <li><a href="#" onclick="openScanner();toggleMenu();" role="menuitem">Scanner</a></li>
-          <li><a href="#" onclick="showTracker();toggleMenu();" role="menuitem">Tracker</a></li>
-          <li><a href="#" onclick="showCustomerCare();toggleMenu();" role="menuitem">Customer Care</a></li>
-          <li><a href="#" onclick="showCompany();toggleMenu();" role="menuitem">About Company</a></li>
-          <li><a href="#" id="logoutBtn" onclick="handleLogout()" style="display:none;" role="menuitem">Logout</a></li>
-        </ul>
-      </div>
-    </nav>
-  </header>
-  <main>
-    <section class="hero" aria-label="Site promotion and branding">
-      <div class="logo-placeholder">
-      <img src="FRESCO.jpg" alt="Fresco logo with green leaf icon" class="logo"/>
-    </div>
-      <h1>Shop Fresco Organics</h1>
-      <p>Natural farm products for a healthier life.</p>
-    </section>
-    <section id="products" class="product-grid" aria-label="Available organic products">
-      <div class="product-card" role="region" aria-labelledby="product-apple">
-        <h3 id="product-apple">Organic Apples</h3>
-        <p>₹120/kg</p>
-        <button class="add-to-cart-btn" onclick="addToCart(1)" aria-label="Add Organic Apples to cart">Add to Cart</button>
-      </div>
-      <div class="product-card" role="region" aria-labelledby="product-banana">
-        <h3 id="product-banana">Organic Bananas</h3>
-        <p>₹80/dozen</p>
-        <button class="add-to-cart-btn" onclick="addToCart(2)" aria-label="Add Organic Bananas to cart">Add to Cart</button>
-      </div>
-      <div class="product-card" role="region" aria-labelledby="product-carrot">
-        <h3 id="product-carrot">Organic Carrots</h3>
-        <p>₹60/kg</p>
-        <button class="add-to-cart-btn" onclick="addToCart(3)" aria-label="Add Organic Carrots to cart">Add to Cart</button>
-      </div>
-      <div class="product-card" role="region" aria-labelledby="product-spinach">
-        <h3 id="product-spinach">Organic Spinach</h3>
-        <p>₹50/bunch</p>
-        <button class="add-to-cart-btn" onclick="addToCart(4)" aria-label="Add Organic Spinach to cart">Add to Cart</button>
-      </div>
-    </section>
-    <!-- Removed cart-placeholder div to avoid layout shift -->
-
-    <!-- Unified modal container for all modals -->
-    <div id="modal-container" role="dialog" aria-modal="true" aria-labelledby="modalTitle" tabindex="-1"></div>
-
-    <div id="scannerContainer" style="display:none; flex-direction:column; align-items:center; z-index:1020;">
-      <video id="video" autoplay muted playsinline aria-label="QR code scanner video feed"></video>
-      <button onclick="closeScanner()">Close Scanner</button>
-      <p id="scanResult" aria-live="polite"></p>
-    </div>
-  </main>
-  <footer>
-    <p>© 2025 Fresco. All rights reserved.</p>
-  </footer>
-  <script src="script.js"></script>
+  <script src="enhanced-script.js"></script>
 </body>
 </html>
